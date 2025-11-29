@@ -1,0 +1,10 @@
+Pokémon Ping
+50
+Professor Oak is testing his new Pokémon communication server. He claims only Pokémon Trainers with the right knowledge can reach his server and get the secret.
+
+Ash's Fire and fighting type pokemon has come forward to assist you. Can you "get" the flag with its assistance?
+
+Netcat the server (0.cloud.chals.io) by following route 23839
+
+Challenge by: Ajith S P
+

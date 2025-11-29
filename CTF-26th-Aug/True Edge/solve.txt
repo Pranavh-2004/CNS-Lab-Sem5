@@ -1,0 +1,37 @@
+Challenge:
+A global ISP’s “TrueEdge” core switch was left exposed during a maintenance window. Attackers believe the device hides an internal admin flag. You’ve been given a firmware update image and a traffic capture from when engineers “tested it.” Recover the flag hidden in the switch’s management plane.
+
+Download the sasquatch file into the same directory as your trueedge_update.bin file and run PATH="$PWD:$PATH" before you start using binwalk to find out whats in the firmware update file
+
+View Hint: Free Hint
+Decrypt the pcap file. check the files you got from binwalk to find a key
+View Hint: Free hint
+The flag is isfcr{X-Auth}
+
+if you know what x-auth is, then you know the answer
+
+Solution:
+isfcr{specterAuth2025}
+
+seed@seedvm2004:~/Desktop/True Edge/squashfs-root/opt$ ls
+auth_try_aes128cbc.pcap  dump.hex            try_aes128ctr.pcap
+auth_try.pcap.enc        NOTICE.txt          try_aes256cbc.pcap
+dec_pbkdf2_aes128.pcap   trace_http.pcap
+dec_pbkdf2_aes256.pcap   try_aes128cfb.pcap
+seed@seedvm2004:~/Desktop/True Edge/squashfs-root/opt$ cat NOTICE.txt 
+diag capture at /opt/trace_http.pcap
+
+seed@seedvm2004:~/Desktop/True Edge/squashfs-root/etc$ ls
+snmp
+seed@seedvm2004:~/Desktop/True Edge/squashfs-root/etc$ cd snmp/
+seed@seedvm2004:~/Desktop/True Edge/squashfs-root/etc/snmp$ ls
+snmpd.conf
+seed@seedvm2004:~/Desktop/True Edge/squashfs-root/etc/snmp$ cat snmpd.conf 
+agentAddress udp:161
+createUser ghost SHA ghostpass AES deadbeefcafebabefeedface
+rouser ghost priv
+
+seed@seedvm2004:~$ curl -v http://cns1-true-edge.chals.io:8080/flag \
+  -H "X-User: specter" \
+  -H "X-Auth: specterAuth2025" \
+  -H "X-Priv: specterPriv2025!"

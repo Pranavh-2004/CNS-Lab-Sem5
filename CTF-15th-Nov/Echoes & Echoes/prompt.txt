@@ -1,0 +1,7 @@
+Echoes & Echoes
+100
+A noisy capture was recovered from a host that’s been “talking” in tiny fragments. The interesting chatter happens when ordinary tools reply, but the pieces are scattered among a lot of background noise. Somewhere in the chatter a tiny whisper points the way, marked with a stray ^. Stitch the replies back together and follow the whisper to reveal the hidden message.
+
+Challenge by : Suraj
+
+ icmp_spoof_forensics_instance5.pcap

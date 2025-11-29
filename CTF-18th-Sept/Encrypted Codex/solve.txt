@@ -1,0 +1,15 @@
+Challenge:
+Giga, a cybersec enthusiast, has hidden Leonardo Da Vinci’s words in a network capture file. Can you retrieve the file and find the message flag?
+
+A second capture file is given to help you figure out how to decode the flag.
+
+Challenge by: Ajith S P
+ Lisa.pcap
+ cipher.pcap
+
+Solution:
+By running the lisa pcap we get bin files and a monalisa png. We put this in online steg site to get a text which talks about Caesar.
+
+Steg online site->put image->ull get Caesar value-> decode with shift val 3
+
+flag is isfcr{D3t4il5_m4k3_p3rf3ct10n}

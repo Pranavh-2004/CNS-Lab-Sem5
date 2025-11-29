@@ -1,0 +1,28 @@
+Challenge:
+The university recently rushed to deploy a new online portal called SecurePortal. It’s supposed to be “enterprise-grade” and locked down… but students are whispering that the developers cut some corners.
+
+Rumor has it that one of the engineers left behind debugging breadcrumbs in production - little traces of information that were only meant for internal testing. The web page itself looks perfectly normal, almost boring.
+
+But in computer security, what you see isn’t always the whole story. Sometimes, secrets hide in places that most users never bother to check.
+
+Your task:
+
+Investigate the SecurePortal homepage.
+
+Look beyond the obvious content.
+
+Find what the developers accidentally exposed and recover the hidden flag.
+
+https://cns1-curl.chals.io
+
+Solution:
+Challenge asks us to run curl. Just running curl gives us the follows - "Welcome to SecurePortal!"
+running curl with just headers gives us the flag
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-26th-Aug/DNS Mystery$ curl -I https://cns1-curl.chals.io
+HTTP/1.1 200 OK
+Server: gunicorn
+Date: Tue, 26 Aug 2025 05:51:02 GMT
+Connection: close
+Content-Type: text/html; charset=utf-8
+Content-Length: 24
+X-Debug-Trace: isfcr{h34d3r5_t3ll_s70r13s}

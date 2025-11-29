@@ -1,0 +1,15 @@
+The Whisper Protocol
+100
+Our SOC team detected unusual network activity from a compromised workstation. The attacker was careful - blending their tracks among thousands of legitimate DNS requests.
+
+Intelligence suggests they used a technique called "DNS tunneling" to exfiltrate sensitive data right under our noses. The data was broken into fragments and hidden in DNS queries to evade detection.
+
+Your mission: Analyze the packet capture and decode the whispered secrets hidden in plain sight.
+
+Hint: The attacker chose a rather "malicious" destination...
+
+Flag format: isfcr{...}
+
+Challenge by : Ajay rao
+
+ dns_exfil_instance_5.pcap

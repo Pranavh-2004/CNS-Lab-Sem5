@@ -1,0 +1,7 @@
+The Leaky Wall
+50
+You are a security analyst at a major corporation. A sensor alerted you to suspicious activity, and you've been tasked with reviewing a snippet of the company's firewall logs. An attacker was seen probing your network and finally managed to connect to a high, non-standard port on an internal server. Your mission is to identify the attacker's IP address and the specific port they connected to.
+
+Format : isfcr{attackersIP:port}
+
+Challenge by : SaiVarun

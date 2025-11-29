@@ -1,0 +1,7 @@
+TCP Source 50000
+50
+A TCP capture contains a single client that repeatedly sends ACKs to the same server. Inspect the repeated ACKs, convert the numeric values in the TCP header to characters in order, and reveal the flag.
+
+Challenge by : Siddhi
+
+ tcp_window_whisper.pcap

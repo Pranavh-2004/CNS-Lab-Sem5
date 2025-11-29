@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+img=""
+for a in "$@"; do if [ "${a#-}" = "$a" ]; then
+	img="$a"
+	break
+fi; done
+outdir="$(dirname "$img")/squashfs-root"
+rm -rf "$outdir"
+unsquashfs -d "$outdir" "$img" >/dev/null

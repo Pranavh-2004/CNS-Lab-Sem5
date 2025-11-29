@@ -1,0 +1,7 @@
+Poisoned Whispers
+100
+A noisy capture contains a DNS query for a suspicious name. Multiple replies come back from unexpected sources; a few aren’t genuine. Parts of a secret are scattered among those replies and concealed in different ways. One part appears encrypted with a familiar common block ciper algorithm; the decryption material is tucked away in a header elsewhere in the trace. Reconstruct the pieces, inspect the surrounding traffic for the clue, and recover the flag.
+
+Challenge by : Suraj R
+
+ dns_poison_forensics_hard_instance5_checked.pcap

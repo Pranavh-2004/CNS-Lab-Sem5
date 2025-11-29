@@ -1,0 +1,67 @@
+Challenge:
+A mysterious DNS query was captured between a client and a public resolver. There’s only a whisper of data, but it’s all you need.
+
+Solution:
+same procedure as ARP Deception challenge
+use strings easy.pcap to get the flag
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-26th-Aug/DNS Mystery$ strings easy.pcap 
+iana
+iana
+iana
+scapy
+scapy
+scapy
+	wikipedia
+	wikipedia
+	wikipedia
+reddit
+reddit
+reddit
+	wikipedia
+	wikipedia
+	wikipedia
+	wikipedia
+	wikipedia
+	wikipedia
+openbsd
+openbsd
+openbsd
+reddit
+reddit
+reddit
+				
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+				
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+				
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+				
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA^,
+GET / HTTP/1.1
+Host: example.com
+HTTP/1.1 301 Moved
+Content-Length: 0
+GET / HTTP/1.1
+Host: example.com
+HTTP/1.1 301 Moved
+Content-Length: 0
+GET / HTTP/1.1
+Host: example.com
+HTTP/1.1 301 Moved
+Content-Length: 0
+ )tg
+)jXC
+Lo`Y
+among
+among
+acme
+isfcr{ez_dn5_sp00f}
+
+
+flag is "isfcr{ez_dn5_sp00f}"

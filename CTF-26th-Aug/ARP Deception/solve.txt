@@ -1,0 +1,33 @@
+Challenge:
+A suspicious .pcap file has been recovered from a compromised segment of the network. It contains a mixture of ARP replies and TCP messages.
+
+Your task is to analyze the traffic, identify inconsistencies in the sources, and uncover the flag that was sent to a specific destination.
+
+Look closely, only one source tells the truth.
+
+Hint (Cost: 0 points)
+Use wireshark to open the pcap file and search through the packets one by one until you find a packet that contains the flag in its body.
+
+Solution:
+run wireshark Spoof.pcap to see all pacekts
+strings Spoof.pcap shows all strings
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-26th-Aug$ wireshark Spoof.pcap 
+^C
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-26th-Aug$ strings Spoof.pcap 
+ping
+"3DUf
+update received
+ISFCR{$3CR3T_K3Y}
+status check
+keepalive
+data: ok
+noop
+heartbeat
+"3DUf
+init handshake
+"3DUf
+"3DUf
+"3DUf
+
+
+flag is "ISFCR{$3CR3T_K3Y}"

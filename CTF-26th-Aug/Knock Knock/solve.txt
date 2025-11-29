@@ -1,0 +1,16 @@
+Challenge:
+A compromised system has several open ports between 1 and 100. One of them leads to a hidden backdoor service, but it won’t reveal the final flag unless you provide the correct passphrase.
+
+Only one door unlocks the flag.
+
+If you've completed the earlier challenge, you already possess the original key.
+
+Otherwise, you may inspect an intercepted Telnet session from a misconfigured internal panel. The key was leaked over the network in plaintext due to a lack of encryption, a classic man-in-the-middle (MITM) weakness. This alternate key will also grant access, but only works for this challenge.
+
+Hint (Cost: 0 points)
+Use nmap to scan for open ports. Then use netcat (nc) to connect with the specific port and enter your pass key to obtain the flag.
+
+Solution:
+netcat challenge demonstrated in class
+
+isfcr{y0u_unl0ck3d_th3_r1ght_d00r}

@@ -1,0 +1,7 @@
+Following Protocol
+a = SSH + HTTPS
+b = RDP - NTP
+c = (Telnet + FTP) * SMTP
+d = DNS * Echo
+
+Compute: Key = c(a + b + d)

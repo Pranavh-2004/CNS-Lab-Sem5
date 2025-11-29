@@ -1,0 +1,64 @@
+Challenge:
+Can you hear the lies?
+
+cns1-not-my-friend.chals.io
+
+Solution:
+The provided server.py:
+	•	Fetches fragments from a remote challenge server at cns1-not-my-friend.chals.io/fragment?order=<index>.
+	•	Replays each fragment via HTTP POST to localhost so someone running Wireshark/tcpdump can “eavesdrop” and see the data.
+	•	The fragments are intentionally sent out of order.
+ORDER = [2, 0, 5, 7, 1, 9, 3, 4, 6, 8]
+Your job is to listen on the local interface, capture those POSTs, and reconstruct the flag.
+
+Run the following on vm:
+python3 server.py --target https://cns1-not-my-friend.chals.io --port 8080
+
+Then Capture the Traffic
+Open another terminal and run one of these to sniff local HTTP POSTs:
+sudo tcpdump -A -i lo port 8080
+or
+sudo tshark -i lo -Y 'http.request.method == "POST"'
+
+However for some reason this kept giving only 7 of 10 fragments
+Trying further:
+tshark -i lo -Y 'http.request.method == "POST"' -T fields -e http.file_data \
+  | sort -n -t. -k1,1 \
+  | cut -d. -f2 \
+  | tr -d '\n' \
+  | base64 -d
+
+Still not able to capture all 10 fragments
+
+Trying to capture the packets through a python script however worked:
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ python3 evesdropping_solve.py 
+[server] Listening on port 8080...
+[+] Captured fragment 2: YjNz
+[+] Captured fragment 0: aXNm
+[+] Captured fragment 5: bmQ1
+[+] Captured fragment 7: zdj
+[+] Captured fragment 1: Y3J7
+[+] Captured fragment 9: Q==
+[+] Captured fragment 3: dF9m
+[+] Captured fragment 4: cjEz
+[+] Captured fragment 6: XzQ
+[+] Captured fragment 8: Nyf
+
+[+] Combined Base64 string:
+YjNzaXNmbmQ1zdjY3J7Q==dF9mcjEzXzQNyf
+
+[!] Failed to decode: Incorrect padding
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ ^C
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ 
+
+This however was wrong order. Fixing the order yields the below:
+"aXNmY3J7YjNzdF9mcjEzbmQ1XzQzdjNyfQ=="
+
+The flag for this is:
+isfcr{b3st_fr13nd5_43v3r}
+
+This is however the decoy flag. We need to put this in the provided website with a nonce. 
+The nonce is the link to the rickroll video on youtube - https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+This gives us the actual flag:
+isfcr{b3st_fr13nd5_t!11_2027}

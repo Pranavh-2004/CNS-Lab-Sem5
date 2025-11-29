@@ -1,0 +1,14 @@
+Rogue Nation
+100
+"Your mission should you choose to accept it.... Click the link for further instructions.."
+
+Secure link
+
+Challenge by: Ajith S P
+
+
+> INTEL BRIEFING_
+> We've detected a temporal anomaly originating from November 2, 1988—the day the Morris Worm was unleashed upon the early internet.
+> The rival hacking group, "The Chronos Syndicate," has tampered with historical network logs from a university server that was one of the first to be infected.
+> They've left a digital breadcrumb, a flag, hidden within the chaos of the worm's activity. Your mission is to analyze the provided network capture from that day and find the message they left behind.
+> Something is... out of place. Find the anachronism.

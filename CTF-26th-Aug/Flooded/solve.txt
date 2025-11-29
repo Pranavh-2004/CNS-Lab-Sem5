@@ -1,0 +1,95 @@
+Challenge:
+Hey, that's my capture of a TCP flood from a spoofed source. Looks like someone has used a side-channel to leak information. They mentioned something about LSB? or something. Not really sure. Could you help me?
+
+Solution:
+From your description:
+	•	TCP flood with spoofed source: lots of packets, maybe uniform-looking traffic.
+	•	Side-channel, LSB (Least Significant Bit): suggests covert data hiding inside fields that look “noisy” in normal traffic.
+	•	Common hiding spots in TCP/IP:
+	•	LSB of the IP Identification field.
+	•	LSB of the TCP sequence number.
+	•	LSB of the TTL.
+	•	Or even padding in Ethernet frames.
+
+How I’d analyze hard.pcap:
+	1.	Open in Wireshark → look at distributions of fields (ip.id, tcp.seq, ip.ttl, etc).
+	•	If one field’s low bit looks like binary data rather than random, that’s suspicious.
+	2.	Export those LSBs to reconstruct a bitstream.
+	3.	Group bits into bytes → ASCII → check if it reveals text, maybe a flag.
+
+Next steps
+	•	Upload the .pcap here, and I’ll write a small Python/Scapy script to extract and reconstruct the hidden data for you.
+
+Open the PCAP and look for covert LSBs
+
+Likely candidates:
+	•	IP ID field (ip.id)
+	•	TCP sequence number (tcp.seq)
+	•	TTL (ip.ttl)
+
+that output of ÿÿÿ… means you are indeed extracting something, but the bit alignment or the field choice isn’t quite right yet.
+
+Here’s how you can fix/debug it:
+
+⸻
+
+1. Why you see ÿ
+	•	ÿ is 0xFF in ASCII (all 1s).
+	•	That means the extractor is reading the wrong bit repeatedly (the LSBs are always 1).
+	•	So either:
+	•	You’re pulling from the wrong field (ip.id & 1 when maybe it’s tcp.seq & 1).
+	•	Or the alignment (8-bit grouping) is off.
+
+⸻
+
+2. How to systematically test each candidate
+
+Here’s an improved script that tries IP ID, TCP sequence, and TTL, and shows the first 200 characters from each:
+```Python
+from scapy.all import rdpcap, IP, TCP
+
+packets = rdpcap("hard.pcap")
+
+def extract_bits(field):
+    bits = []
+    for pkt in packets:
+        if IP in pkt and TCP in pkt:
+            if field == "ip_id":
+                bits.append(pkt[IP].id & 1)
+            elif field == "tcp_seq":
+                bits.append(pkt[TCP].seq & 1)
+            elif field == "ttl":
+                bits.append(pkt[IP].ttl & 1)
+    return bits
+
+def bits_to_text(bits):
+    chars = []
+    for i in range(0, len(bits), 8):
+        byte = bits[i:i+8]
+        if len(byte) < 8:
+            continue
+        val = int("".join(str(b) for b in byte), 2)
+        if 32 <= val <= 126 or val in (10, 13):  # printable ASCII + newline
+            chars.append(chr(val))
+        else:
+            chars.append(".")
+    return "".join(chars)
+
+for field in ["ip_id", "tcp_seq", "ttl"]:
+    bits = extract_bits(field)
+    text = bits_to_text(bits)
+    print(f"\n--- {field} ---")
+    print(text[:200])
+```
+
+Output:
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-26th-Aug/Flooded$ python3 solve.py 
+
+--- ip_id ---
+...................
+
+--- tcp_seq ---
+isfcr{sp00f_g3n1u5}
+
+--- ttl ---
+...................

@@ -1,0 +1,6 @@
+localghost
+100
+Something strange lurks in the network traffic. Connect, capture, and uncover what the ghost left behind in the wire. Challenge by : Vijval
+
+ ghost5.exe
+ ghost5

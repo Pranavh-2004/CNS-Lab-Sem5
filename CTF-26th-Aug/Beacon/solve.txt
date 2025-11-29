@@ -1,0 +1,8 @@
+Challenge:
+A covert beaconing tool has been captured transmitting data in chunks over UDP to port 31337.
+
+The payload appears scrambled... until you realize the ordering depends on something else entirely.
+
+Solution:
+Just run wireshark on the pcap and check the last charecters of the payload and u can piece together the flag
+isfcr{b34c0n_it_i5}

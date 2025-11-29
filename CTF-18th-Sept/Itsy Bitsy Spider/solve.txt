@@ -1,0 +1,80 @@
+Challenge:
+User Credentials are buried in network traffic. Extract the plain-text username and password from a noisy PCAP, authenticate to the server, and hunt the flag.
+
+Solution:
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ strings cred.pcap 
+This is a benign logging message. The system processed 512 entries. No action required; this is part of normal operation
+. Please ignore.
+Dear security team,
+I was tracing some logs and noticed unusual activity in the access patterns last n
+ight. The session details are strange 
+ there are long headers and repeated GETs for resources that do not exist. Could 
+you please verify the following account details when you get a moment?
+Account summary:
+  owner: Bruce Wayne
+  username
+: CNS
+  account-type: admin
+Regards,
+Alfred
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Welcome to the service. For help, contact support@example.local.
+Hello ops,
+We've rotated a number of secret keys and passwords. Please update the vault when you can. Below is the temporary credent
+ial we used for the automated tests. It will be valid for 24 hours.
+Temporary credentials:
+  password: CNS@PES
+  expire
+s: 2025-09-20T23:59:59Z
+Thanks,
+Automation Team
+example
+pingpayload
+reply
+GET /index.html HTTP/1.1
+Host: example
+HTTP/1.1 200 OK
+Content-Length: 13
+Hello, world!
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ 
+
+From this we get the credentials:
+From the strings output of cred.pcap you’ve already uncovered the clear-text credentials hidden in the captured traffic:
+	•	Username: CNS
+	•	Password: CNS@PES
+
+On using the given website we get:
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ curl -s -D - -u 'CNS:CNS@PES' 'https://cns1-itsy-bitsy-spider.chals.io/protected' | sed -n '1,200p'
+HTTP/1.1 200 OK
+Server: Werkzeug/3.1.3 Python/3.10.18
+Date: Thu, 18 Sep 2025 03:12:18 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 276
+X-CTF-Hint: Check /secret_route
+Connection: close
+
+
+<!doctype html>
+<html>
+  <head><title>Protected Area</title></head>
+  <body>
+    <h1>Welcome, investigator.</h1>
+    <p>The flag is not here 😆😆😆</p>
+    <script>
+      // Hint: How can you access website content in command line? 🤔
+    </script>
+  </body>
+</html>
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ 
+
+If we closely observe the X-CTF-Hint header we get a path /secret_route to check:
+
+seed@seedvm2004:/mnt/hgfs/CNS-S5/CTF-18th-Sept$ curl -u 'CNS:CNS@PES' https://cns1-itsy-bitsy-spider.chals.io/secret_route
+Nice work. The flag is here: aXNmY3J7VzF0aF9ncjNhdF9wMHczcl9jMG0zc19ncjM0dF9yZXNwMG5zMWJpbDF0eX0=
+
+We then decode the base64:
+echo 'aXNmY3J7VzF0aF9ncjNhdF9wMHczcl9jMG0zc19ncjM0dF9yZXNwMG5zMWJpbDF0eX0=' | base64 -d
+
+This gives us the flag:
+isfcr{W1th_gr3at_p0w3r_c0m3s_gr34t_resp0ns1bil1ty}

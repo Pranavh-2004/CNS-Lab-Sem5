@@ -1,0 +1,35 @@
+The challenge began with a firmware update binary that needed to be unpacked and explored. Using tools like binwalk and unsquashfs, I extracted the contents of the firmware image and started digging into its filesystem. During exploration of the /opt directory, I noticed a few suspicious files — one of them was an encrypted capture file named auth_try.pcap.enc. This immediately stood out as unusual, since packet captures are not something you normally expect inside device firmware.
+
+Since the file was encrypted, I needed to figure out the correct key and method to unlock it. By analyzing the filename and challenge hints, I suspected it was encrypted with AES in CBC mode using PBKDF2 as the key derivation function. To confirm, I tried brute-forcing with a set of likely passwords (ghost, ghostpass, deadbeefcafebabefeedface, trueedge, admin) combined with common AES key sizes (128, 192, 256 bits). For each attempt, I used the following loop with openssl to try decryption and save the outputs:
+
+Loop algorithm for extracting the decrypted pcap file:
+for p in ghost ghostpass deadbeefcafebabefeedface trueedge admin; do
+  for bits in 128 192 256; do
+    echo "[*] Trying $p with AES-$bits + PBKDF2"
+    openssl enc -d -aes-${bits}-cbc -pbkdf2 \
+      -in auth_try.pcap.enc \
+      -out try_${p}_${bits}_pbkdf2.pcap \
+      -pass pass:$p 2>/dev/null
+    file try_${p}_${bits}_pbkdf2.pcap
+  done
+done
+
+Eventually, one of the password–bit combinations successfully decrypted the file into a valid .pcap. This was the key breakthrough, because now I had access to the network traffic that the firmware had been hiding.
+
+Inspecting the decrypted packet capture revealed HTTP traffic between the device and a backend server at cns1-true-edge.chals.io:8080. Within the requests, I found custom headers carrying authentication credentials hardcoded directly into the firmware. These looked like:
+
+X-User: specter
+X-Auth: specterAuth2025
+X-Priv: specterPriv2025!
+
+This showed that the firmware stored sensitive credentials in plaintext and used them for communication. Since the capture also revealed a request to /flag, it was clear that the way forward was to replay this request with the extracted headers.
+
+I built a curl command with the same headers and pointed it at the challenge server. After fixing some quoting issues, the final working command was:
+
+curl -v http://cns1-true-edge.chals.io:8080/flag \
+  -H "User-Agent: curl/7.88.1" \
+  -H "Accept: */*" \
+  -H "X-User: specter" \
+  -H "X-Auth: specterAuth2025" \
+  -H "X-Priv: specterPriv2025!"
+

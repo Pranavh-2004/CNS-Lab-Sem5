@@ -1,0 +1,8 @@
+BLACKOUT
+100
+A rogue insider went dark three hours ago. Before disappearing, they accessed a critical server and transmitted encrypted data to an unknown recipient. We recovered two things from their abandoned workstation: network traffic and a carelessly exposed file. Find out what they stole. Port Number : 4443 Protocol: http Flag format: isfcr{...}
+
+Challenge by : Ajay Rao
+
+ challenge5.pcap
+ server.key

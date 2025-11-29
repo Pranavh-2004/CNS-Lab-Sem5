@@ -1,0 +1,191 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+**/venv/
+**/.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Logs
+*.log
+logs/
+*.pcap.log
+
+# Network captures (large files - add specific ones to track if needed)
+# Uncomment if you don't want to track pcap files
+# *.pcap
+# *.pcapng
+# *.cap
+
+# Large packet capture files
+# CTF-15th-Nov/TCP Source 50000/tcp_window_whisper.pcap
+# CTF-15th-Nov/Echoes & Echoes/icmp_spoof_forensics_instance5.pcap
+# CTF-15th-Nov/BLACKOUT/challenge5.pcap
+# CTF-15th-Nov/The Insider's Network/suspicious_traffic_server_5.pcap
+# CTF-15th-Nov/Rogue Nation/capture.pcap
+# CTF-15th-Nov/The Whisper Protocol/dns_exfil_instance_5.pcap
+# CTF-15th-Nov/Lost in DNS: Broken Breadcrumbs/dns_exfil.pcap
+# CTF-15th-Nov/Poisoned Whispers/dns_poison_forensics_hard_instance5_checked.pcap
+# CTF-18th-Sept/Encrypted Codex/cipher.pcap
+# CTF-18th-Sept/Encrypted Codex/Lisa.pcap
+# CTF-18th-Sept/Itsy Bitsy Spider/cred.pcap
+# CTF-26th-Aug/DNS Mystery/easy.pcap
+# CTF-26th-Aug/Flooded/hard.pcap
+# CTF-26th-Aug/ARP Deception/Spoof.pcap
+# CTF-26th-Aug/Beacon/medium.pcap
+
+# Sensitive data
+*.key
+*.pem
+*.crt
+secrets/
+credentials/
+*.env
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# CTF flags and solutions (optional - uncomment to hide solutions)
+# **/flag.txt
+# **/solution.txt
+
+# Large text output files
+CTF-18th-Sept/Encrypted Codex/braced_decode_results.txt
+CTF-18th-Sept/Encrypted Codex/payloads.txt
+CTF-18th-Sept/Encrypted Codex/all_strings.txt
+CTF-15th-Nov/Echoes & Echoes/icmp_data_hex.txt
+
+# Compiled binaries and C files
+*.out
+*.exe
+*.o
+*.a
+
+# Large binary/executable files
+CTF-15th-Nov/localghost/ghost5
+CTF-15th-Nov/localghost/ghost5.exe
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# PDF reports (optional - uncomment if you don't want to track reports)
+# *.pdf
+
+# Large lab report PDFs (over 1MB)
+# Lab8/PES1UG23CS433_PranavHemanth-CNSLab8.pdf
+# Lab7/PES1UG23CS433_PranavHemanth-CNSLab7.pdf
+# Lab9/PES1UG23CS433_PranavHemanth-CNSLab9.pdf
+# Lab9/PES1UG23CS433_PranavHemanth-CNSLab9_old.pdf
+# Lab4/PES1UG23CS433_PranavHemanth-CNSLab4.pdf
+# Lab5/PES1UG23CS433_PranavHemanth-CNSLab5.pdf
+# Lab6/PES1UG23CS433_PranavHemanth-CNSLab6.pdf
+# Lab1/PES1UG23CS433_PranavHemanth-CNSLab1.pdf
+# Lab2/PES1UG23CS433_PranavHemanth-CNSLab2.pdf
+# Lab3/PES1UG23CS433_PranavHemanth-CNSLab3.pdf
+
+# Other large PDF files
+# Lab1/Lab 1.pdf
+# Lab3/Lab3_PES1UG23CS488.pdf
+# Lab6/CNS LAB-6.pdf
+# Lab6/Lab6_PES1UG23CS488.pdf
+# CTF-26th-Aug/CNS CTF 26Aug.pdf
+# CaseStudy/Case Study.pdf
+# CaseStudy/Slides - Case Study.pdf
+
+# Large DOCX files
+# Lab7/PES1UG23CS439_Praneet.docx
+# Lab2/CNS-Task2_Labreport_PES1UG23AM193.docx
+# CaseStudy/PES1UG23CS433_PES1UG23CS401-DBMS_Miniproject.docx
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# Wireshark
+*.pcapng.tmp
+
+# # Volume mounts (keep empty directories but not contents)
+# **/volumes/*
+# !**/volumes/.gitkeep
+
+# Lab specific
+**/node_modules/
+**/package-lock.json
+**/yarn.lock
+
+# Test outputs
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*~

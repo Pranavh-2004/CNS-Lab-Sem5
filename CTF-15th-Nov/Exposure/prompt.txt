@@ -1,0 +1,10 @@
+Exposure
+100
+This site forgot to protect its internal resources. Can you find the flag and color it?
+
+https://isfcr-exposure5.chals.io/
+
+Challenge by : Aathreya
+
+Unlock Hint for 0 points
+There's an exposed html flag...
